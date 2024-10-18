@@ -5,3 +5,6 @@ esdata03
 elasticsearch
 kibana
 kibanadata
+certs
+nifi
+nifi_registry
