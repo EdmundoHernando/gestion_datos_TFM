@@ -6,6 +6,7 @@ Primera parte dond realizamos un compose de de elaticsearch, kibana y logstash.
 Elasticsearch: http://localhost:9200
 Logstash: http://localhost:9600
 Kibana: http://localhost:5601/api/status
+NiFi: http://localhost:8080/nifi-api
 
 Para dar permisos a elatic y poder hacer mount bind de los volumenes:
 

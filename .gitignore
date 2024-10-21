@@ -6,5 +6,5 @@ elasticsearch
 kibana
 kibanadata
 certs
-nifi
-nifi_registry
+# nifi
+# nifi_registry
