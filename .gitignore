@@ -8,3 +8,6 @@ kibanadata
 # certs
 # nifi
 # nifi_registry
+nifi-cert.pem
+nifi-client-cert.pem
+certs
