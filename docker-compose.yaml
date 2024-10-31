@@ -52,6 +52,7 @@ services:
       retries: 120
 
   es01:
+    container_name: elastic
     depends_on:
       setup:
         condition: service_healthy
@@ -157,11 +158,12 @@ services:
       - my_persistent_network
 
   nifi:
+    build:
+      context: ./nifi
+      dockerfile: Dockerfile
     user: root
     hostname: mynifi
     container_name: nifi_container_persistent
-    image: 'apache/nifi:1.14.0'  # latest image as of 2021-11-09.
-    restart: on-failure
     ports:
       - '8091:8080'
     environment:
@@ -184,8 +186,8 @@ services:
       - ./nifi/provenance_repository:/opt/nifi/nifi-current/provenance_repository
       - ./nifi/state:/opt/nifi/nifi-current/state
       - ./nifi/logs:/opt/nifi/nifi-current/logs
-# uncomment the next line after copying the /conf directory from the container to your local directory to persist NiFi flows
       - ./nifi/conf:/opt/nifi/nifi-current/conf
+      - ./nifi/certs:/opt/nifi/nifi-current/certs  # Asegúrate de montar esta carpeta
     networks:
       - my_persistent_network
 
