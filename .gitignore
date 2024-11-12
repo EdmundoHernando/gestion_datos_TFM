@@ -1,13 +1,11 @@
-# .env
+.env
 esdata01
 esdata02
 esdata03
-# elasticsearch
-# kibana
+elasticsearch
+kibana
 kibanadata
-# certs
-# nifi
-# nifi_registry
-nifi-cert.pem
-nifi-client-cert.pem
+certs
+nifi
+nifi_registry
 certs

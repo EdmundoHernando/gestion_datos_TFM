@@ -37,12 +37,28 @@ services:
         fi;
         echo "Setting file permissions"
         chown -R root:root /usr/share/elasticsearch/config/certs;
-        find /usr/share/elasticsearch/config/certs -type d -exec chmod 750 \{\} \;;
-        find /usr/share/elasticsearch/config/certs -type f -exec chmod 640 \{\} \;;
+        find /usr/share/elasticsearch/config/certs -type d -exec chmod 775 \{\} \;;
+        find /usr/share/elasticsearch/config/certs -type f -exec chmod 664 \{\} \;;
         echo "Waiting for Elasticsearch availability";
         until curl -s --cacert /usr/share/elasticsearch/config/certs/ca/ca.crt https://es01:9200 | grep -q "missing authentication credentials"; do sleep 30; done;
         echo "Setting kibana_system password";
         until curl -s -X POST --cacert /usr/share/elasticsearch/config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" https://es01:9200/_security/user/kibana_system/_password -d "{\"password\":\"${KIBANA_PASSWORD}\"}" | grep -q "^{}"; do sleep 10; done;
+        
+        echo "Creating PKCS12 (.p12) files";
+
+        openssl pkcs12 -export -out /usr/share/elasticsearch/config/certs/ca.p12 \
+        -inkey /usr/share/elasticsearch/config/certs/ca/ca.key \
+        -in /usr/share/elasticsearch/config/certs/ca/ca.crt \
+        -passout pass:gatvgatv;
+
+        openssl pkcs12 -export -out /usr/share/elasticsearch/config/certs/es01-keystore.p12 \
+        -inkey /usr/share/elasticsearch/config/certs/es01/es01.key \
+        -in /usr/share/elasticsearch/config/certs/es01/es01.crt \
+        -certfile /usr/share/elasticsearch/config/certs/ca/ca.crt \
+        -passout pass:gatvgatv;
+
+
+
         echo "All done!";
       '
     healthcheck:
@@ -159,7 +175,7 @@ services:
 
   nifi:
     build:
-      context: ./nifi
+      context: ./nifi_docker
       dockerfile: Dockerfile
     user: root
     hostname: mynifi
@@ -187,14 +203,11 @@ services:
       - ./nifi/state:/opt/nifi/nifi-current/state
       - ./nifi/logs:/opt/nifi/nifi-current/logs
       - ./nifi/conf:/opt/nifi/nifi-current/conf
-      - ./nifi/certs:/opt/nifi/nifi-current/certs  # Asegúrate de montar esta carpeta
+      - ./nifi/certs:/opt/nifi/nifi-current/certs
+      - ./certs:/opt/nifi/nifi-current/certs/elastic
+      # - ./templates_nifi:/opt/nifi/nifi-current/templates
     networks:
       - my_persistent_network
-
-
-
-
-
 
 
 networks:
