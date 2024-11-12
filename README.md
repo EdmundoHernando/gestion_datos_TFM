@@ -1,20 +1,25 @@
 # gestion_datos_TFM
-Primera parte dond realizamos un compose de de elaticsearch, kibana y logstash.
+
+Instrucciones para levantar el stack de Elasticsearch, Kibana, NiFi y Nifi Registry
+
+    ./start.sh siempre para lanzar los contenedores. Importante siempre usar ./start.sh para levantar los contenedores la primera vez o despes de un ./remove.sh
+    ./stop.sh para detenerlos manteniendo la persistencia de los datos.
+    ./remove.sh para borrar los contenedores y los datos.
+
+En la caprpeta templates se encuentran los archivos de configuracion de los contenedores (archivo .env)
 
 
 
-Elasticsearch: http://localhost:9200
-Logstash: http://localhost:9600
-Kibana: http://localhost:5601/api/status
-NiFi: http://localhost:8080/nifi-api
+URLs de acceso a los servicios:
 
-Para dar permisos a elatic y poder hacer mount bind de los volumenes:
+    Elasticsearch: http://localhost:9200
+    Kibana: http://localhost:5601/
+    NiFi: http://localhost:8080/nifi/
+    Nifi Registry: http://localhost:18080/nifi-registry/
 
-    mkdir esdatadir
-    chmod g+rwx esdatadir
-    chgrp 0 esdatadir
+Nombres de las imagenes:
+    elaticsearch: es01 --> container name : elastic
+    kibana: kibana 
+    nifi: nifi --> container name : nifi_container_persistent
+    nifi-registry: nifi-registry --> container name : registry_container_persistent
 
-Hacer los ./ a los volumenes e incluirlos en el .gitignore para hacer el commit
-Crear rama dev en github 
-Buscar catalogo de datos OS y compatibles con elastic
-Mirar seguridad OAuth2 (Keycloak)
