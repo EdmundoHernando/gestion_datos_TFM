@@ -9,3 +9,5 @@ certs
 nifi
 nifi_registry
 certs
+nifi_storage
+templates_nifi
