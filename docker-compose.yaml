@@ -19,7 +19,7 @@ services:
         if [ ! -f /usr/share/elasticsearch/config/certs/ca.zip ]; then
           echo "Creating CA";
           bin/elasticsearch-certutil ca --silent --pem -out /usr/share/elasticsearch/config/certs/ca.zip;
-          unzip /usr/share/elasticsearch/config/certs/ca.zip -d /usr/share/elasticsearch/config/certs;
+          unzip /usr/sharMOCK_DATAe/elasticsearch/config/certs/ca.zip -d /usr/share/elasticsearch/config/certs;
         fi;
         if [ ! -f /usr/share/elasticsearch/config/certs/certs.zip ]; then
           echo "Creating certs";
@@ -168,7 +168,7 @@ services:
       - NIFI_REGISTRY_FLOW_PROVIDER=file
       - NIFI_REGISTRY_FLOW_STORAGE_DIR=/opt/nifi-registry/nifi-registry-current/flow_storage
     volumes:
-      - ./nifi_registry/database:/opt/nifi-registry/nifi-registry-current/database
+      - ./nifi_registry/dMOCK_DATAatabase:/opt/nifi-registry/nifi-registry-current/database
       - ./nifi_registry/flow_storage:/opt/nifi-registry/nifi-registry-current/flow_storage
     networks:
       - my_persistent_network
