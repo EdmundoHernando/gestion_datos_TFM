@@ -175,8 +175,11 @@ services:
 
 
   nifi:
-    image: apache/nifi:1.21.0
+    build:
+      context: ./nifi
+      dockerfile: Dockerfile
     container_name: nifi
+    user: root
     ports:
       - "8443:8443"
     environment:
@@ -200,6 +203,7 @@ services:
       - ./nifi/templates:/opt/nifi/nifi-current/conf/templates
     networks:
       - my_persistent_network
+    
 
 
 networks:
