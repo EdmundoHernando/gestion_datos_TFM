@@ -22,26 +22,15 @@ echo "Ajustando permisos para carpetas..."
 chmod g+rwx elasticsearch kibana nifi_registry nifi nifi/conf certs
 chgrp 0 elasticsearch kibana nifi_registry nifi nifi/conf certs
 
-# Copiar configuración de NiFi solo si no está presente
-if [ ! -f "./nifi/conf/nifi.properties" ]; then
-  echo "Copiando configuración de NiFi..."
-  cp -r nifi_docker/conf/* nifi/conf/
-else
-  echo "Configuración de NiFi ya está presente. No se copiará de nuevo."
-fi
+# # Copiar configuración de NiFi solo si no está presente
+# if [ ! -f "./nifi/conf/nifi.properties" ]; then
+#   echo "Copiando configuración de NiFi..."
+#   cp -r nifi_docker/conf/* nifi/conf/
+# else
+#   echo "Configuración de NiFi ya está presente. No se copiará de nuevo."
+# fi
 
-# Crear certificados solo si no existen
-if [ ! -f "./nifi/certs/nifi-keystore.p12" ]; then
-  echo "Generando certificados de NiFi..."
-  keytool -genkeypair -alias nifi -keyalg RSA -keysize 2048 \
-    -keystore ./nifi/certs/nifi-keystore.p12 -storepass gatvgatv \
-    -keypass gatvgatv -dname "CN=NiFi, OU=Dev, O=Org, L=City, S=State, C=Country" \
-    -storetype PKCS12
-  keytool -exportcert -alias nifi -keystore ./nifi/certs/nifi-keystore.p12 \
-    -storepass gatvgatv -file ./nifi/certs/nifi-cert.pem
-else
-  echo "Certificados de NiFi ya existen. No se generarán de nuevo."
-fi
+sudo ./nifi/generate_certs.sh
 
 # Arrancar docker-compose para Elasticsearch, Kibana y NiFi
 echo "Iniciando docker-compose para Elasticsearch, Kibana y NiFi..."
@@ -53,9 +42,9 @@ until docker compose -f docker-compose.yaml exec -T kibana curl -s http://localh
   echo "Esperando que Kibana esté disponible..."
   sleep 5
 done
-until curl -s http://localhost:8091/nifi-api/flow/about | grep -q '"version"'; do
-  echo "Esperando que NiFi esté listo..."
-  sleep 5
-done
+# until curl -s https://localhost:8443/nifi-api/flow/about | grep -q '"version"'; do
+#   echo "Esperando que NiFi esté listo..."
+#   sleep 5
+# done
 
 echo "Todos los servicios están en marcha."

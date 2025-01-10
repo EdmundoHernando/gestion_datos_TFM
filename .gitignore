@@ -1,10 +1,18 @@
-.env
+# .env
 elasticsearch
 kibana
 kibanadata
 certs
+nifi/content_repository
+nifi/database_repository
+nifi/provenance_repository
+nifi/logs
+nifi/provenance_repository
+nifi/state
+nifi/conf/archive
 nifi
 nifi_registry
-certs
 nifi_storage
 templates_nifi
+openmetadata
+Toronto

@@ -18,7 +18,7 @@ docker compose -f docker-compose.yaml down
 sudo rm -rf elasticsearch
 sudo rm -rf kibana
 sudo rm -rf nifi_registry
-sudo rm -rf nifi
-sudo rm -rf ./nifi/conf
+# sudo rm -rf nifi
+# sudo rm -rf ./nifi/conf
 sudo rm -rf certs
 sudo rm -rf ./nifi/certs
