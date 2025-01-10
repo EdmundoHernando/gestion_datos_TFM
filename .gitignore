@@ -10,9 +10,14 @@ nifi/logs
 nifi/provenance_repository
 nifi/state
 nifi/conf/archive
-nifi
 nifi_registry
 nifi_storage
 templates_nifi
 openmetadata
 Toronto
+stops.py
+stops
+nifi/certs
+nifi/conf/nifi-cert.pem
+nifi/conf/truststore.p12
+nifi/conf/keystore.p12
