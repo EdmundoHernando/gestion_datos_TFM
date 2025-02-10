@@ -47,4 +47,6 @@ done
 #   sleep 5
 # done
 
+# docker compose -f openmetadata/docker-compose.yaml up -d
+
 echo "Todos los servicios están en marcha."

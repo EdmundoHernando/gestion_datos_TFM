@@ -1,23 +1,31 @@
-# .env
-elasticsearch
-kibana
-kibanadata
-certs
-nifi/content_repository
-nifi/database_repository
-nifi/provenance_repository
-nifi/logs
-nifi/provenance_repository
-nifi/state
-nifi/conf/archive
+elasticsearch/*
+!elasticsearch/.gitkeep
+kibana/*
+!kibana/.gitkeep
+certs/*
+!certs/.gitkeep
+# nifi/content_repository
+# nifi/database_repository
+# nifi/provenance_repository
+# nifi/logs
+# nifi/provenance_repository
+# nifi/state
+# nifi/conf/archive
+# nifi/lib
+# nifi/certs
+# nifi/conf
+nifi/*
+!nifi/generate_certs.sh
+!nifi/Dockerfile
 nifi_registry
 nifi_storage
 templates_nifi
-openmetadata
+openmetadata/certs_elastic
+openmetadata/docker-volume
 Toronto
 stops.py
-stops
-nifi/certs
-nifi/conf/nifi-cert.pem
-nifi/conf/truststore.p12
-nifi/conf/keystore.p12
+AML_simplified_states-all.csv
+docker-compose-atlas.yaml
+frontend
+HTTP
+

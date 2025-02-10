@@ -175,13 +175,15 @@ services:
 
 
   nifi:
-    build:
-      context: ./nifi
-      dockerfile: Dockerfile
+    # build:
+    #   context: ./nifi
+    #   dockerfile: Dockerfile
+    image: apache/nifi:2.2.0
     container_name: nifi
     user: root
     ports:
       - "8443:8443"
+      - "8086:8086"
     environment:
       - NIFI_WEB_HTTPS_PORT=8443
       - SINGLE_USER_CREDENTIALS_USERNAME=admin
@@ -189,6 +191,9 @@ services:
       - NIFI_CLUSTER_NODE_PROTOCOL_PORT=8082
       - NIFI_ZK_CONNECT_STRING=myzookeeper:2181
       - NIFI_ELECTION_MAX_WAIT=30 sec
+      - NIFI_SECURITY_KEYSTORE_PASSWD=gatvgatv
+      - NIFI_SECURITY_TRUSTSTORE_PASSWD=gatvgatv
+      - NIFI_SECURITY_KEY_PASSWD=gatvgatv
 
     volumes:
       - ./nifi/database_repository:/opt/nifi/nifi-current/database_repository
@@ -197,10 +202,10 @@ services:
       - ./nifi/provenance_repository:/opt/nifi/nifi-current/provenance_repository
       - ./nifi/state:/opt/nifi/nifi-current/state
       - ./nifi/logs:/opt/nifi/nifi-current/logs
-      - ./nifi/conf:/opt/nifi/nifi-current/conf
+      # Para mantener persistencia de datos en nifi lanzar una vez copiar nifi/conf a carpeta local y descomentar el volumen
+      # - ./nifi/conf:/opt/nifi/nifi-current/conf
       - ./nifi/certs:/opt/nifi/nifi-current/certs
       - ./certs:/opt/nifi/nifi-current/certs/elastic
-      - ./nifi/templates:/opt/nifi/nifi-current/conf/templates
     networks:
       - my_persistent_network
     

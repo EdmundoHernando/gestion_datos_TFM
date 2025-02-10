@@ -1,4 +1,4 @@
-FROM apache/nifi:1.21.0
+FROM apache/nifi:2.2.0
 
 # Configurar permisos al inicio del contenedor
 RUN chown -R nifi:nifi /opt/nifi/nifi-current && \

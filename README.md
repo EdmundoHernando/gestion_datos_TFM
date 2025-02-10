@@ -1,6 +1,6 @@
 # gestion_datos_TFM
 
-Instrucciones para levantar el stack de Elasticsearch, Kibana, NiFi y Nifi Registry
+Instrucciones para levantar el stack de Elasticsearch, Kibana, NiFi y Nifi Registry (todos en docker-compose.yaml)
 
     ./start.sh siempre para lanzar los contenedores. Importante siempre usar ./start.sh para levantar los contenedores la primera vez o despes de un ./remove.sh
     ./stop.sh para detenerlos manteniendo la persistencia de los datos.
@@ -12,14 +12,22 @@ En la caprpeta templates se encuentran los archivos de configuracion de los cont
 
 URLs de acceso a los servicios:
 
-    Elasticsearch: http://localhost:9200
+    Elasticsearch: http://localhost:9201
     Kibana: http://localhost:5601/
-    NiFi: http://localhost:8080/nifi/
+    NiFi: https://localhost:8443/nifi/
     Nifi Registry: http://localhost:18080/nifi-registry/
 
-Nombres de las imagenes:
-    elaticsearch: es01 --> container name : elastic
-    kibana: kibana 
-    nifi: nifi --> container name : nifi_container_persistent
-    nifi-registry: nifi-registry --> container name : registry_container_persistent
+Levantar el servicio de Openmetada:
+
+    docker-compose -f openemetadata/docker-compose-openmetadata.yaml up -d
+
+Para acceder a la interfaz de Openmetadata:
+
+    http://localhost:8585
+
+    Usuario: admin@open-metadata.org
+    Contraseña: admin
+
+CASO DE LEVANTAR SOLO OPENMETADATA:
+    Red de docker externalizada en docker compose de OpenMetadata. Cambiar a tipo bridge si solo se va a usar OpenMetadata.
 
