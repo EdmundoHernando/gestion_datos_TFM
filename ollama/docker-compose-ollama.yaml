@@ -1,0 +1,22 @@
+services:
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    restart: unless-stopped
+    volumes:
+      - ollama:/root/.ollama
+      - ./Modelfiles:/Modelfiles
+    ports:
+      - "11434:11434"
+
+    networks:
+      - gestion_datos_tfm_my_persistent_network
+
+  
+
+volumes:
+  ollama:
+
+networks:
+  gestion_datos_tfm_my_persistent_network:
+    external: true

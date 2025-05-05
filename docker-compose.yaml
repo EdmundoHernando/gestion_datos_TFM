@@ -31,6 +31,18 @@ services:
           "      - localhost\n"\
           "    ip:\n"\
           "      - 127.0.0.1\n"\
+          "  - name: es02\n"\
+          "    dns:\n"\
+          "      - es02\n"\
+          "      - localhost\n"\
+          "    ip:\n"\
+          "      - 127.0.0.1\n"\
+          "  - name: es03\n"\
+          "    dns:\n"\
+          "      - es03\n"\
+          "      - localhost\n"\
+          "    ip:\n"\
+          "      - 127.0.0.1\n"\
           > /usr/share/elasticsearch/config/certs/instances.yml;
           bin/elasticsearch-certutil cert --silent --pem -out /usr/share/elasticsearch/config/certs/certs.zip --in /usr/share/elasticsearch/config/certs/instances.yml --ca-cert /usr/share/elasticsearch/config/certs/ca/ca.crt --ca-key /usr/share/elasticsearch/config/certs/ca/ca.key;
           unzip /usr/share/elasticsearch/config/certs/certs.zip -d /usr/share/elasticsearch/config/certs;
@@ -75,14 +87,14 @@ services:
       - ./certs:/usr/share/elasticsearch/config/certs
       - ./elasticsearch:/usr/share/elasticsearch/data
     ports:
-      - 9201:9201  # Cambié el puerto a 9201 en el contenedor y el host
+      - 9201:9201
     networks:
       - my_persistent_network
     environment:
       - node.name=es01
       - cluster.name=${CLUSTER_NAME}
-      - cluster.initial_master_nodes=es01
-      - discovery.seed_hosts=es02
+      - cluster.initial_master_nodes=es01,es02,es03
+      - discovery.seed_hosts=es02,es03
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
       - bootstrap.memory_lock=true
       - xpack.security.enabled=true
@@ -96,7 +108,8 @@ services:
       - xpack.security.transport.ssl.certificate_authorities=/usr/share/elasticsearch/config/certs/ca/ca.crt
       - xpack.security.transport.ssl.verification_mode=certificate
       - xpack.license.self_generated.type=${LICENSE}
-      - http.port=9201  # Cambié el puerto HTTP de Elasticsearch a 9201
+      - xpack.ml.use_auto_machine_memory_percent=true
+      - http.port=9201
     mem_limit: ${MEM_LIMIT}
     ulimits:
       memlock:
@@ -112,9 +125,101 @@ services:
       timeout: 10s
       retries: 120
 
+  es02:
+    depends_on:
+      - es01
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    volumes:
+      - ./certs:/usr/share/elasticsearch/config/certs
+      - elasticsearch2:/usr/share/elasticsearch/data
+    networks:
+      - my_persistent_network
+    environment:
+      - node.name=es02
+      - cluster.name=${CLUSTER_NAME}
+      - cluster.initial_master_nodes=es01,es02,es03
+      - discovery.seed_hosts=es01,es03
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.key=/usr/share/elasticsearch/config/certs/es01/es01.key
+      - xpack.security.http.ssl.certificate=/usr/share/elasticsearch/config/certs/es01/es01.crt
+      - xpack.security.http.ssl.certificate_authorities=/usr/share/elasticsearch/config/certs/ca/ca.crt
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.key=/usr/share/elasticsearch/config/certs/es01/es01.key
+      - xpack.security.transport.ssl.certificate=/usr/share/elasticsearch/config/certs/es01/es01.crt
+      - xpack.security.transport.ssl.certificate_authorities=/usr/share/elasticsearch/config/certs/ca/ca.crt
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.license.self_generated.type=${LICENSE}
+      - xpack.ml.use_auto_machine_memory_percent=true
+    mem_limit: ${MEM_LIMIT}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s --cacert /usr/share/elasticsearch/config/certs/ca/ca.crt https://es01:9201 | grep -q 'missing authentication credentials'",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 120
+
+  es03:
+    depends_on:
+      - es02
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    volumes:
+      - ./certs:/usr/share/elasticsearch/config/certs
+      - elasticsearch3:/usr/share/elasticsearch/data
+    networks:
+      - my_persistent_network
+    environment:
+      - node.name=es03
+      - cluster.name=${CLUSTER_NAME}
+      - cluster.initial_master_nodes=es01,es02,es03
+      - discovery.seed_hosts=es01,es02
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.key=/usr/share/elasticsearch/config/certs/es01/es01.key
+      - xpack.security.http.ssl.certificate=/usr/share/elasticsearch/config/certs/es01/es01.crt
+      - xpack.security.http.ssl.certificate_authorities=/usr/share/elasticsearch/config/certs/ca/ca.crt
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.key=/usr/share/elasticsearch/config/certs/es01/es01.key
+      - xpack.security.transport.ssl.certificate=/usr/share/elasticsearch/config/certs/es01/es01.crt
+      - xpack.security.transport.ssl.certificate_authorities=/usr/share/elasticsearch/config/certs/ca/ca.crt
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.license.self_generated.type=${LICENSE}
+      - xpack.ml.use_auto_machine_memory_percent=true
+    mem_limit: ${MEM_LIMIT}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s --cacert /usr/share/elasticsearch/config/certs/ca/ca.crt https://es01:9201 | grep -q 'missing authentication credentials'",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 120
+
+
+
   kibana:
     depends_on:
       es01:
+        condition: service_healthy
+      es02:
+        condition: service_healthy
+      es03:
         condition: service_healthy
     image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
     volumes:
@@ -126,7 +231,7 @@ services:
       - my_persistent_network
     environment:
       - SERVERNAME=kibana
-      - ELASTICSEARCH_HOSTS=https://es01:9201  # Cambié el puerto para Kibana
+      - ELASTICSEARCH_HOSTS=https://es01:9201
       - ELASTICSEARCH_USERNAME=kibana_system
       - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
       - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=/usr/share/kibana/config/certs/ca/ca.crt
@@ -145,7 +250,7 @@ services:
   
   zookeeper:
     hostname: myzookeeper
-    container_name: zookeeper_container_persistent
+    container_name: zookeeper
     image: 'bitnami/zookeeper:3.9.2'
     restart: on-failure
     environment:
@@ -157,8 +262,8 @@ services:
   registry:
     user: root
     hostname: myregistry
-    container_name: registry_container_persistent
-    image: 'apache/nifi-registry:1.15.0'  # latest image as of 2021-11-09.
+    container_name: registry
+    image: 'apache/nifi-registry:1.15.0'
     restart: on-failure
     ports:
       - "18080:18080"
@@ -175,10 +280,7 @@ services:
 
 
   nifi:
-    # build:
-    #   context: ./nifi
-    #   dockerfile: Dockerfile
-    image: apache/nifi:2.2.0
+    image: apache/nifi:latest
     container_name: nifi
     user: root
     ports:
@@ -194,7 +296,6 @@ services:
       - NIFI_SECURITY_KEYSTORE_PASSWD=gatvgatv
       - NIFI_SECURITY_TRUSTSTORE_PASSWD=gatvgatv
       - NIFI_SECURITY_KEY_PASSWD=gatvgatv
-
     volumes:
       - ./nifi/database_repository:/opt/nifi/nifi-current/database_repository
       - ./nifi/flowfile_repository:/opt/nifi/nifi-current/flowfile_repository
@@ -202,10 +303,12 @@ services:
       - ./nifi/provenance_repository:/opt/nifi/nifi-current/provenance_repository
       - ./nifi/state:/opt/nifi/nifi-current/state
       - ./nifi/logs:/opt/nifi/nifi-current/logs
-      # Para mantener persistencia de datos en nifi lanzar una vez copiar nifi/conf a carpeta local y descomentar el volumen
-      # - ./nifi/conf:/opt/nifi/nifi-current/conf
+      - ./nifi/conf:/opt/nifi/nifi-current/conf
       - ./nifi/certs:/opt/nifi/nifi-current/certs
       - ./certs:/opt/nifi/nifi-current/certs/elastic
+      - ./nifi/drivers:/opt/nifi/drivers
+      - ./FLaNK-python-processors-main:/opt/nifi/nifi-current/python_extensions
+      - ../Toronto:/opt/nifi/nifi-current/Toronto
     networks:
       - my_persistent_network
     
@@ -214,3 +317,12 @@ services:
 networks:
   my_persistent_network:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
+
+volumes:
+  elasticsearch3:
+    driver: local
+  elasticsearch2:
+    driver: local

@@ -47,6 +47,8 @@ done
 #   sleep 5
 # done
 
-# docker compose -f openmetadata/docker-compose.yaml up -d
+docker compose -f openmetadata/docker-compose-openmetadata.yaml up -d
+docker compose -f postgres/docker-compose-postgres.yaml up -d
+docker compose -f ollama/docker-compose-ollama.yaml up -d
 
 echo "Todos los servicios están en marcha."

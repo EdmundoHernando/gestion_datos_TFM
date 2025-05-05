@@ -14,7 +14,21 @@ certs/*
 # nifi/lib
 # nifi/certs
 # nifi/conf
+
+# Ignora todo dentro de nifi
 nifi/*
+
+# ¡Pero conserva todo lo de conf!
+!nifi/conf/
+!nifi/conf/**
+
+# Ignora el contenido de archive
+nifi/conf/archive/*
+
+# Pero conserva la carpeta archive vacía (con .gitkeep)
+!nifi/conf/archive/.gitkeep
+
+
 !nifi/generate_certs.sh
 !nifi/Dockerfile
 nifi_registry
@@ -28,4 +42,7 @@ AML_simplified_states-all.csv
 docker-compose-atlas.yaml
 frontend
 HTTP
+
+ollama/Modelfiles
+
 

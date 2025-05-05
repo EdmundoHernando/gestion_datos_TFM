@@ -1,0 +1,31 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: gatvgatv
+      POSTGRES_DB: datamodels
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5431:5432"
+    networks:
+      - gestion_datos_tfm_my_persistent_network
+
+  adminer:
+    image: adminer:latest
+    container_name: adminer
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+    ports:
+      - 8082:8080
+    networks:
+      - gestion_datos_tfm_my_persistent_network
+
+volumes:
+  postgres_data:
+
+networks:
+  gestion_datos_tfm_my_persistent_network:
+    external: true
